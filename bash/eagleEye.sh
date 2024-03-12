@@ -18,3 +18,5 @@ fi
 
 # Use Tesseract to extract text
 tesseract $SCREENSHOT_PATH $OUTPUT_PATH
+
+xdg-open $OUTPUT_PATH
