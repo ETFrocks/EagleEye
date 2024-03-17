@@ -3,8 +3,8 @@
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Define the screenshot and output file paths
-SCREENSHOT_PATH="${BASE_DIR}/screenshot.png"
-OUTPUT_PATH="${BASE_DIR}/output"
+SCREENSHOT_PATH="${1:-${BASE_DIR}/screenshot.png}"
+OUTPUT_PATH="${2:-${BASE_DIR}/output}"
 LOG_PATH="${BASE_DIR}/error.log"
 
 # Function to log errors
