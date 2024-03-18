@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -13,35 +14,12 @@ log_error() {
 }
 
 # Capture screenshot
-import -window root $SCREENSHOT_PATH
-
-if [ $? -ne 0 ]; then
-    log_error "Failed to capture screenshot."
-    echo "Failed to capture screenshot. Check error.log for more details."
-    exit 1
-fi
+import -window root $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
 
 # Check if Tesseract is installed
-if ! command -v tesseract &> /dev/null
-then
-    log_error "Tesseract could not be found. Please install it and try again."
-    echo "Tesseract could not be found. Please install it and try again."
-    exit 1
-fi
+command -v tesseract &> /dev/null || log_error "Tesseract could not be found. Please install it and try again."
 
 # Use Tesseract to extract text
-tesseract $SCREENSHOT_PATH $OUTPUT_PATH
+tesseract $SCREENSHOT_PATH $OUTPUT_PATH || log_error "Failed to extract text with Tesseract."
 
-if [ $? -ne 0 ]; then
-    log_error "Failed to extract text with Tesseract."
-    echo "Failed to extract text with Tesseract. Check error.log for more details."
-    exit 1
-fi
-
-xdg-open $OUTPUT_PATH
-
-if [ $? -ne 0 ]; then
-    log_error "Failed to open output file."
-    echo "Failed to open output file. Check error.log for more details."
-    exit 1
-fi
+xdg-open $OUTPUT_PATH || log_error "Failed to open output file."
