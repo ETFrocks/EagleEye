@@ -13,6 +13,10 @@ log_error() {
     echo "$(date): $1" >> $LOG_PATH
 }
 
+# Add a delay of 5 seconds
+echo "Preparing to take screenshot in 5 seconds..."
+sleep 5
+
 # Capture screenshot
 import -window root $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
 
