@@ -17,6 +17,9 @@ log_error() {
 echo "Preparing to take screenshot in 5 seconds..."
 sleep 5
 
+# Check if ImageMagick is installed
+command -v import &> /dev/null || log_error "ImageMagick could not be found. Please install it and try again."
+
 # Capture screenshot
 import -window root $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
 
