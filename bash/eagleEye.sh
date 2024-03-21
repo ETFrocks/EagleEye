@@ -18,13 +18,21 @@ echo "Preparing to take screenshot in 5 seconds..."
 sleep 5
 
 # Check if ImageMagick is installed
-command -v import &> /dev/null || log_error "ImageMagick could not be found. Please install it and try again."
+if ! command -v import &> /dev/null
+then
+    log_error "ImageMagick could not be found. Installing it now."
+    sudo apt-get install imagemagick -y
+fi
 
 # Capture screenshot
 import -window root $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
 
 # Check if Tesseract is installed
-command -v tesseract &> /dev/null || log_error "Tesseract could not be found. Please install it and try again."
+if ! command -v tesseract &> /dev/null
+then
+    log_error "Tesseract could not be found. Installing it now."
+    sudo apt-get install tesseract-ocr -y
+fi
 
 # Use Tesseract to extract text
 tesseract $SCREENSHOT_PATH $OUTPUT_PATH || log_error "Failed to extract text with Tesseract."
