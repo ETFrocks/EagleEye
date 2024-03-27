@@ -25,7 +25,12 @@ then
 fi
 
 # Capture screenshot
-import -window root $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
+if import -window root $SCREENSHOT_PATH; then
+    echo "Screenshot captured successfully."
+else
+    log_error "Failed to capture screenshot."
+    exit 1
+fi
 
 # Check if Tesseract is installed
 if ! command -v tesseract &> /dev/null
