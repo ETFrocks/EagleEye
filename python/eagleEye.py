@@ -1,24 +1,30 @@
-from PIL import ImageGrab
-import pytesseract
 import os
+import time
+import subprocess
+from PIL import ImageGrab
+from pytesseract import image_to_string
 
-# Define the output file path
-output_file_path = 'output.txt'
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+SCREENSHOT_PATH = os.path.join(BASE_DIR, 'screenshot.png')
+OUTPUT_PATH = os.path.join(BASE_DIR, 'output.txt')
+LOG_PATH = os.path.join(BASE_DIR, 'error.log')
 
-# Check if the output file already exists and delete it if it does
-if os.path.exists(output_file_path):
-    os.remove(output_file_path)
+def log_error(message):
+    with open(LOG_PATH, 'a') as f:
+        f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')}: {message}\n")
 
-# Capture screenshot
+print("Preparing to take screenshot in 5 seconds...")
+time.sleep(5)
+
 img = ImageGrab.grab()
+img.save(SCREENSHOT_PATH)
 
-# Use pytesseract to extract text
-text = pytesseract.image_to_string(img)
+print("Screenshot captured successfully.")
 
-# Check if pytesseract was able to extract text
+text = image_to_string(img)
+
 if text:
-    # Write the text to a file
-    with open(output_file_path, 'w') as f:
+    with open(OUTPUT_PATH, 'w') as f:
         f.write(text)
 else:
-    print("No text could be extracted from the screenshot.")
+    log_error("Failed to extract text with Tesseract.")
