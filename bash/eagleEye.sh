@@ -17,11 +17,18 @@ log_error() {
 echo "Preparing to take screenshot in 5 seconds..."
 sleep 5
 
+# Function to check if a package is installed
+is_package_installed() {
+    dpkg -s "$1" &> /dev/null
+}
+
 # Check if ImageMagick is installed
 if ! command -v import &> /dev/null
 then
-    log_error "ImageMagick could not be found. Installing it now."
-    sudo apt-get install imagemagick -y
+    if ! is_package_installed imagemagick; then
+        log_error "ImageMagick could not be found. Installing it now."
+        sudo apt-get install imagemagick -y
+    fi
 fi
 
 # Capture screenshot
@@ -35,8 +42,10 @@ fi
 # Check if Tesseract is installed
 if ! command -v tesseract &> /dev/null
 then
-    log_error "Tesseract could not be found. Installing it now."
-    sudo apt-get install tesseract-ocr -y
+    if ! is_package_installed tesseract-ocr; then
+        log_error "Tesseract could not be found. Installing it now."
+        sudo apt-get install tesseract-ocr -y
+    fi
 fi
 
 # Use Tesseract to extract text
