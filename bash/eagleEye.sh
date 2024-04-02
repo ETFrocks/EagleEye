@@ -22,9 +22,18 @@ is_package_installed() {
     dpkg -s "$1" &> /dev/null
 }
 
+# Function to check if the user has sudo privileges
+check_sudo() {
+    if ! sudo -n true 2>/dev/null; then
+        log_error "User does not have sudo privileges. Exiting."
+        exit 1
+    fi
+}
+
 # Check if ImageMagick is installed
 if ! command -v import &> /dev/null
 then
+    check_sudo
     if ! is_package_installed imagemagick; then
         log_error "ImageMagick could not be found. Installing it now."
         sudo apt-get install imagemagick -y
@@ -42,6 +51,7 @@ fi
 # Check if Tesseract is installed
 if ! command -v tesseract &> /dev/null
 then
+    check_sudo
     if ! is_package_installed tesseract-ocr; then
         log_error "Tesseract could not be found. Installing it now."
         sudo apt-get install tesseract-ocr -y
