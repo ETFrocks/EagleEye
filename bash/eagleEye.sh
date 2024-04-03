@@ -30,6 +30,12 @@ check_sudo() {
     fi
 }
 
+# Function to update a package
+update_package() {
+    sudo apt-get update
+    sudo apt-get upgrade $1 -y
+}
+
 # Check if ImageMagick is installed
 if ! command -v import &> /dev/null
 then
@@ -37,6 +43,8 @@ then
     if ! is_package_installed imagemagick; then
         log_error "ImageMagick could not be found. Installing it now."
         sudo apt-get install imagemagick -y
+    else
+        update_package imagemagick
     fi
 fi
 
@@ -55,6 +63,8 @@ then
     if ! is_package_installed tesseract-ocr; then
         log_error "Tesseract could not be found. Installing it now."
         sudo apt-get install tesseract-ocr -y
+    else
+        update_package tesseract-ocr
     fi
 fi
 
