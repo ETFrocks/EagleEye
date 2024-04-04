@@ -56,6 +56,12 @@ else
     exit 1
 fi
 
+# Check if the screenshot file exists and is not empty
+if [ ! -s $SCREENSHOT_PATH ]; then
+    log_error "Screenshot file is empty or does not exist."
+    exit 1
+fi
+
 # Check if Tesseract is installed
 if ! command -v tesseract &> /dev/null
 then
