@@ -22,6 +22,11 @@ is_package_installed() {
     dpkg -s "$1" &> /dev/null
 }
 
+# Function to check if a package is up-to-date
+is_package_up_to_date() {
+    sudo apt-get install --only-upgrade "$1" -y &> /dev/null
+}
+
 # Function to check if the user has sudo privileges
 check_sudo() {
     if ! sudo -n true 2>/dev/null; then
@@ -32,8 +37,10 @@ check_sudo() {
 
 # Function to update a package
 update_package() {
-    sudo apt-get update
-    sudo apt-get upgrade $1 -y
+    if ! is_package_up_to_date $1; then
+        sudo apt-get update
+        sudo apt-get upgrade $1 -y
+    fi
 }
 
 # Check if ImageMagick is installed
