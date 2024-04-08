@@ -22,6 +22,11 @@ is_package_installed() {
     dpkg -s "$1" &> /dev/null
 }
 
+# Function to check if a package is available in the repositories
+is_package_available() {
+    apt-cache policy "$1" | grep -q Candidate
+}
+
 # Function to check if a package is up-to-date
 is_package_up_to_date() {
     sudo apt-get install --only-upgrade "$1" -y &> /dev/null
@@ -48,8 +53,13 @@ if ! command -v import &> /dev/null
 then
     check_sudo
     if ! is_package_installed imagemagick; then
-        log_error "ImageMagick could not be found. Installing it now."
-        sudo apt-get install imagemagick -y
+        if is_package_available imagemagick; then
+            log_error "ImageMagick could not be found. Installing it now."
+            sudo apt-get install imagemagick -y
+        else
+            log_error "ImageMagick is not available in the repositories."
+            exit 1
+        fi
     else
         update_package imagemagick
     fi
@@ -74,8 +84,13 @@ if ! command -v tesseract &> /dev/null
 then
     check_sudo
     if ! is_package_installed tesseract-ocr; then
-        log_error "Tesseract could not be found. Installing it now."
-        sudo apt-get install tesseract-ocr -y
+        if is_package_available tesseract-ocr; then
+            log_error "Tesseract could not be found. Installing it now."
+            sudo apt-get install tesseract-ocr -y
+        else
+            log_error "Tesseract is not available in the repositories."
+            exit 1
+        fi
     else
         update_package tesseract-ocr
     fi
