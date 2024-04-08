@@ -48,22 +48,25 @@ update_package() {
     fi
 }
 
-# Check if ImageMagick is installed
-if ! command -v import &> /dev/null
-then
-    check_sudo
-    if ! is_package_installed imagemagick; then
-        if is_package_available imagemagick; then
-            log_error "ImageMagick could not be found. Installing it now."
-            sudo apt-get install imagemagick -y
+# Check if required packages are installed and up-to-date
+REQUIRED_PACKAGES=("imagemagick" "tesseract-ocr")
+for package in "${REQUIRED_PACKAGES[@]}"; do
+    if ! command -v $package &> /dev/null
+    then
+        check_sudo
+        if ! is_package_installed $package; then
+            if is_package_available $package; then
+                log_error "$package could not be found. Installing it now."
+                sudo apt-get install $package -y
+            else
+                log_error "$package is not available in the repositories."
+                exit 1
+            fi
         else
-            log_error "ImageMagick is not available in the repositories."
-            exit 1
+            update_package $package
         fi
-    else
-        update_package imagemagick
     fi
-fi
+done
 
 # Capture screenshot
 if import -window root $SCREENSHOT_PATH; then
@@ -77,23 +80,6 @@ fi
 if [ ! -s $SCREENSHOT_PATH ]; then
     log_error "Screenshot file is empty or does not exist."
     exit 1
-fi
-
-# Check if Tesseract is installed
-if ! command -v tesseract &> /dev/null
-then
-    check_sudo
-    if ! is_package_installed tesseract-ocr; then
-        if is_package_available tesseract-ocr; then
-            log_error "Tesseract could not be found. Installing it now."
-            sudo apt-get install tesseract-ocr -y
-        else
-            log_error "Tesseract is not available in the repositories."
-            exit 1
-        fi
-    else
-        update_package tesseract-ocr
-    fi
 fi
 
 # Use Tesseract to extract text
