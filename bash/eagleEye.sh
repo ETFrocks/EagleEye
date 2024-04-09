@@ -8,9 +8,14 @@ SCREENSHOT_PATH="${1:-${BASE_DIR}/screenshot.png}"
 OUTPUT_PATH="${2:-${BASE_DIR}/output}"
 LOG_PATH="${BASE_DIR}/error.log"
 
+# Define the email address for error notifications
+EMAIL="user@example.com"
+
 # Function to log errors
 log_error() {
     echo "$(date): $1" >> $LOG_PATH
+    # Send an email notification
+    echo "$(date): $1" | mail -s "Error in screenshot script" $EMAIL
 }
 
 # Add a delay of 5 seconds
