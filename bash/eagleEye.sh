@@ -90,4 +90,8 @@ fi
 # Use Tesseract to extract text
 tesseract $SCREENSHOT_PATH $OUTPUT_PATH || log_error "Failed to extract text with Tesseract."
 
+# Open the output file
 xdg-open $OUTPUT_PATH || log_error "Failed to open output file."
+
+# Delete the screenshot
+rm $SCREENSHOT_PATH || log_error "Failed to delete screenshot."
