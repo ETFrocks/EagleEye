@@ -54,7 +54,7 @@ update_package() {
 }
 
 # Check if required packages are installed and up-to-date
-REQUIRED_PACKAGES=("imagemagick" "tesseract-ocr")
+REQUIRED_PACKAGES=("imagemagick" "tesseract-ocr" "xdotool")
 for package in "${REQUIRED_PACKAGES[@]}"; do
     if ! command -v $package &> /dev/null
     then
@@ -73,13 +73,16 @@ for package in "${REQUIRED_PACKAGES[@]}"; do
     fi
 done
 
-# Capture screenshot
-if import -window root $SCREENSHOT_PATH; then
-    echo "Screenshot captured successfully."
-else
-    log_error "Failed to capture screenshot."
-    exit 1
-fi
+# Capture screenshot of a specific area
+echo "Please click and drag to select the area to capture."
+eval $(xdotool getmouselocation --shell)
+X=$X Y=$Y
+xdotool mousedown 1
+while xdotool getmouselocation | grep -q "button1"; do
+    sleep 0.1
+done
+eval $(xdotool getmouselocation --shell)
+import -window root -crop $((X2-X))x$((Y2-Y))+$X+$Y $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
 
 # Check if the screenshot file exists and is not empty
 if [ ! -s $SCREENSHOT_PATH ]; then
