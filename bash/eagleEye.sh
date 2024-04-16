@@ -54,7 +54,7 @@ update_package() {
 }
 
 # Check if required packages are installed and up-to-date
-REQUIRED_PACKAGES=("imagemagick" "tesseract-ocr" "xdotool")
+REQUIRED_PACKAGES=("imagemagick" "tesseract-ocr" "xdotool" "mailutils")
 for package in "${REQUIRED_PACKAGES[@]}"; do
     if ! command -v $package &> /dev/null
     then
