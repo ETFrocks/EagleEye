@@ -15,7 +15,11 @@ EMAIL="user@example.com"
 log_error() {
     echo "$(date): $1" >> $LOG_PATH
     # Send an email notification
-    echo "$(date): $1" | mail -s "Error in screenshot script" $EMAIL || echo "$(date): Failed to send email" >> $LOG_PATH
+    for i in {1..3}
+    do
+        echo "$(date): $1" | mail -s "Error in screenshot script" $EMAIL && break || echo "$(date): Failed to send email. Attempt $i" >> $LOG_PATH
+        sleep 5
+    done
 }
 
 # Add a delay of 5 seconds
