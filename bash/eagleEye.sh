@@ -11,10 +11,20 @@ LOG_PATH="${BASE_DIR}/error.log"
 # Define the email address for error notifications
 EMAIL="user@example.com"
 
+# Function to check if mail command is available and working
+check_mail_command() {
+    if ! command -v mail &> /dev/null
+    then
+        echo "Mail command could not be found. Please install it before running the script."
+        exit 1
+    fi
+}
+
 # Function to log errors
 log_error() {
     echo "$(date): $1" >> $LOG_PATH
     # Send an email notification
+    check_mail_command
     for i in {1..3}
     do
         echo "$(date): $1" | mail -s "Error in screenshot script" $EMAIL && break || echo "$(date): Failed to send email. Attempt $i" >> $LOG_PATH
