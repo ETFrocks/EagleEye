@@ -32,9 +32,22 @@ log_error() {
     done
 }
 
+# Function to check if sufficient disk space is available
+check_disk_space() {
+    local required_space=$1
+    local available_space=$(df --output=avail "$PWD" | tail -n1)
+    if (( available_space < required_space )); then
+        log_error "Insufficient disk space. Required: $required_space, Available: $available_space"
+        exit 1
+    fi
+}
+
 # Add a delay of 5 seconds
 echo "Preparing to take screenshot in 5 seconds..."
 sleep 5
+
+# Check if sufficient disk space is available
+check_disk_space 50000
 
 # Function to check if a package is installed
 is_package_installed() {
