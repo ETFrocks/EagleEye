@@ -32,12 +32,12 @@ log_error() {
     done
 }
 
-# Function to check if sufficient disk space is available
-check_disk_space() {
+# Function to check if sufficient disk space is available before installing packages
+check_disk_space_before_install() {
     local required_space=$1
     local available_space=$(df --output=avail "$PWD" | tail -n1)
     if (( available_space < required_space )); then
-        log_error "Insufficient disk space. Required: $required_space, Available: $available_space"
+        log_error "Insufficient disk space to install packages. Required: $required_space, Available: $available_space"
         exit 1
     fi
 }
@@ -88,6 +88,8 @@ for package in "${REQUIRED_PACKAGES[@]}"; do
         check_sudo
         if ! is_package_installed $package; then
             if is_package_available $package; then
+                # Check if sufficient disk space is available before installing the package
+                check_disk_space_before_install 50000
                 log_error "$package could not be found. Installing it now."
                 sudo apt-get install $package -y
             else
