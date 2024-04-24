@@ -32,12 +32,12 @@ log_error() {
     done
 }
 
-# Function to check if sufficient disk space is available before installing packages
-check_disk_space_before_install() {
+# Function to check if sufficient disk space is available before capturing screenshot
+check_disk_space_before_capture() {
     local required_space=$1
     local available_space=$(df --output=avail "$PWD" | tail -n1)
     if (( available_space < required_space )); then
-        log_error "Insufficient disk space to install packages. Required: $required_space, Available: $available_space"
+        log_error "Insufficient disk space to capture screenshot. Required: $required_space, Available: $available_space"
         exit 1
     fi
 }
@@ -47,7 +47,18 @@ echo "Preparing to take screenshot in 5 seconds..."
 sleep 5
 
 # Check if sufficient disk space is available
-check_disk_space 50000
+check_disk_space_before_capture 50000
+
+# Capture screenshot of a specific area
+echo "Please click and drag to select the area to capture."
+eval $(xdotool getmouselocation --shell)
+X=$X Y=$Y
+xdotool mousedown 1
+while xdotool getmouselocation | grep -q "button1"; do
+    sleep 0.1
+done
+eval $(xdotool getmouselocation --shell)
+import -window root -crop $((X2-X))x$((Y2-Y))+$X+$Y $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
 
 # Function to check if a package is installed
 is_package_installed() {
