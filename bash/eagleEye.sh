@@ -122,7 +122,13 @@ while xdotool getmouselocation | grep -q "button1"; do
     sleep 0.1
 done
 eval $(xdotool getmouselocation --shell)
-import -window root -crop $((X2-X))x$((Y2-Y))+$X+$Y $SCREENSHOT_PATH || log_error "Failed to capture screenshot."
+import -window root -crop $((X2-X))x$((Y2-Y))+$X+$Y $SCREENSHOT_PATH
+
+# Check if the screenshot was successfully taken
+if [ $? -ne 0 ]; then
+    log_error "Failed to capture screenshot."
+    exit 1
+fi
 
 # Check if the screenshot file exists and is not empty
 if [ ! -s $SCREENSHOT_PATH ]; then
