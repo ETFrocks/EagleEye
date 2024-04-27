@@ -122,17 +122,30 @@ for package in "${REQUIRED_PACKAGES[@]}"; do
         fi
     fi
 done
+# Function to capture screenshot
+capture_screenshot() {
+    echo "Please click and drag to select the area to capture."
+    eval $(xdotool getmouselocation --shell)
+    X=$X Y=$Y
+    xdotool mousedown 1
+    while xdotool getmouselocation | grep -q "button1"; do
+        sleep 0.1
+    done
+    eval $(xdotool getmouselocation --shell)
+    import -window root -crop $((X2-X))x$((Y2-Y))+$X+$Y $SCREENSHOT_PATH
+}
 
 # Capture screenshot of a specific area
-echo "Please click and drag to select the area to capture."
-eval $(xdotool getmouselocation --shell)
-X=$X Y=$Y
-xdotool mousedown 1
-while xdotool getmouselocation | grep -q "button1"; do
-    sleep 0.1
+for i in {1..3}
+do
+    capture_screenshot && break || echo "$(date): Failed to capture screenshot. Attempt $i" >> $LOG_PATH
+    sleep 5
 done
-eval $(xdotool getmouselocation --shell)
-import -window root -crop $((X2-X))x$((Y2-Y))+$X+$Y $SCREENSHOT_PATH
+
+if [ $? -ne 0 ]; then
+    log_error "Failed to capture screenshot after 3 attempts."
+    exit 1
+fi
 
 # Check if the screenshot was successfully taken
 if [ $? -ne 0 ]; then
