@@ -135,6 +135,12 @@ capture_screenshot() {
     import -window root -crop $((X2-X))x$((Y2-Y))+$X+$Y $SCREENSHOT_PATH
 }
 
+# Check if the screenshot was successfully taken
+if [ $? -ne 0 ]; then
+    log_error "Failed to capture screenshot."
+    exit 1
+fi
+
 # Capture screenshot of a specific area
 for i in {1..3}
 do
@@ -147,17 +153,20 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Check if the screenshot was successfully taken
-if [ $? -ne 0 ]; then
-    log_error "Failed to capture screenshot."
-    exit 1
-fi
-
 # Check if the screenshot file exists and is not empty
 if [ ! -s $SCREENSHOT_PATH ]; then
     log_error "Screenshot file is empty or does not exist."
     exit 1
 fi
+
+# Function to compress the screenshot
+compress_screenshot() {
+    local quality=$1
+    convert $SCREENSHOT_PATH -quality $quality $SCREENSHOT_PATH
+}
+
+# Compress the screenshot before sending it via email
+compress_screenshot 50
 
 # Use Tesseract to extract text
 tesseract $SCREENSHOT_PATH $OUTPUT_PATH || log_error "Failed to extract text with Tesseract."
