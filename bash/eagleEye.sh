@@ -175,4 +175,8 @@ tesseract $SCREENSHOT_PATH $OUTPUT_PATH || log_error "Failed to extract text wit
 xdg-open $OUTPUT_PATH || log_error "Failed to open output file."
 
 # Delete the screenshot
-rm $SCREENSHOT_PATH || log_error "Failed to delete screenshot."
+if rm $SCREENSHOT_PATH; then
+    echo "Screenshot successfully deleted."
+else
+    log_error "Failed to delete screenshot."
+fi
