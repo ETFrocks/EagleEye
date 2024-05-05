@@ -179,4 +179,10 @@ if rm $SCREENSHOT_PATH; then
     echo "Screenshot successfully deleted."
 else
     log_error "Failed to delete screenshot."
+    # Try to delete the screenshot again
+    if rm -f $SCREENSHOT_PATH; then
+        echo "Screenshot successfully deleted after retry."
+    else
+        log_error "Failed to delete screenshot after retry."
+    fi
 fi
